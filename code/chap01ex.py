@@ -14,13 +14,29 @@ import nsfg
 import thinkstats2
 
 
-def main(script):
-    """Tests the functions in this module.
+def ValidatePregnum():
 
-    script: string script name
-    """
-    print('%s: All tests passed.' % script)
+    # read pregnancy dataframe
+    preg = nsfg.ReadFemPreg()
+
+    # get count of number of pregnancies per respondent (pregnum)
+    pregnum_counts = preg.pregnum.value_counts().sort_index()
+    print(pregnum_counts)
+
+    preg_map = nsfg.MakePregMap(preg)
+
+    for index, pregnum in preg.pregnum.iteritems():
+        caseid = preg.caseid[index]
+        indices = preg_map[caseid]
+
+        # check that pregnum in respondent file equals
+        # number of pregancy records
+        if len(indices) != pregnum:
+            print(caseid, len(indices), pregnum)
+            return False
+
+    return True
 
 
-if __name__ == '__main__':
-    main(*sys.argv)
+
+ValidatePregnum()
